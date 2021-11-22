@@ -1,20 +1,18 @@
 from django.db import models
 
 # Create your models here.
-class healthProfessional(models.Model):
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    email = models.CharField(max_length=100)
+class Person(models.Model):
+    first_name = models.CharField(max_length=100, null=True)
+    last_name = models.CharField(max_length=100, null=True)
+    email = models.CharField(max_length=100, null=True)
     password = models.CharField(max_length=100)
-    status = models.BooleanField()
+    status = models.BooleanField(default=False)
 
-class User(models.Model):
-    email = models.CharField(max_length=100)
-    password = models.CharField(max_length=100)
-    status = models.BooleanField()
+    def __str__(self):
+        return self.first_name + " " + self.last_name
 
-class Appointment(models.Model):
-    userID = models.ForeignKey(User, on_delete=models.CASCADE)
-    professionalID =  models.ForeignKey(healthProfessional,on_delete=models.CASCADE)
-    when = models.DateTimeField()
+# class Appointment(models.Model):
+#     userID = models.ForeignKey(User, on_delete=models.CASCADE)
+#     professionalID =  models.ForeignKey(User,on_delete=models.CASCADE)
+#     when = models.DateTimeField()
 
