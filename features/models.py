@@ -11,8 +11,7 @@ class Person(models.Model):
     def __str__(self):
         return self.first_name + " " + self.last_name
 
-# class Appointment(models.Model):
-#     userID = models.ForeignKey(User, on_delete=models.CASCADE)
-#     professionalID =  models.ForeignKey(User,on_delete=models.CASCADE)
-#     when = models.DateTimeField()
-
+class Appointment(models.Model):
+    userID = models.ForeignKey(Person, on_delete=models.CASCADE, related_name='User')
+    professionalID =  models.ForeignKey(Person,on_delete=models.CASCADE, related_name='Professional')
+    when = models.DateTimeField()

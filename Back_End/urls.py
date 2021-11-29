@@ -19,18 +19,9 @@ from django.urls import path
 from features.views import *
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', index),
-    path('registeruser/', register_user, name='register'),
-    path('dashboard/', dashboard, name='dashboard')
-
-    # path('createhealthprofessional/', create_health_professional),
-    # path('createuser/', create_user),
-    # path('changepassworduser/', change_password_user),
-    # path('changepasswordhealthprofessional/', change_password_health_professional),
-    # path('logoutuser/', logout_user),
-    # path('logouthealthprofessional/', logout_health_professional),
-    # path('getavailablehealthprofessionals/', get_available_health_professionals),
-    # path('createappointment/', create_appointment),
-    # path('getappointment/', get_appointment)
+    path('admin/', admin.site.urls, name='admin'),
+    path('', dashboard, name='dashboard' ),
+    path('register/', register, name='register'),
+    path('login/', loginPage, name='login'),
+    path('logout/', logoutUser, name="logout"),
 ]
