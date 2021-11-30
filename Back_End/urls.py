@@ -24,4 +24,7 @@ urlpatterns = [
     path('register/', register, name='register'),
     path('login/', loginPage, name='login'),
     path('logout/', logoutUser, name="logout"),
+    path('home', HomeTemplateView.as_view(), name="home"),
+    path('make-an-appointment/', AppointmentTemplateView.as_view(), name="appointment"),
+    path('manage-appointments/', ManageAppointmentTemplateView.as_view(), name="manage"),
 ]
