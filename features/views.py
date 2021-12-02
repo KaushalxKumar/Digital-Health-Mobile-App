@@ -24,7 +24,7 @@ from features.forms import *
 # Create your views here.
 @login_required(login_url='login')
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    return render(request, 'index.html')
 
 #Register User:
 def register(request):
@@ -67,25 +67,6 @@ def loginPage(request):
 def logoutUser(request):
     logout(request)
     return redirect('login')
-
-
-class HomeTemplateView(TemplateView):
-    template_name = "index.html"
-
-    def post(self, request):
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-        message = request.POST.get("message")
-
-        email = EmailMessage(
-            subject=f"{name} from doctor family.",
-            body=message,
-            from_email=settings.EMAIL_HOST_USER,
-            to=[settings.EMAIL_HOST_USER],
-            reply_to=[email]
-        )
-        email.send()
-        return HttpResponse("Email sent successfully!")
 
 
 class AppointmentTemplateView(TemplateView):
