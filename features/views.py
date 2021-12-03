@@ -26,7 +26,6 @@ from features.forms import *
 def dashboard(request):
     return render(request, 'index.html')
 
-#Register User:
 def register(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
@@ -68,6 +67,8 @@ def logoutUser(request):
     logout(request)
     return redirect('login')
 
+def available(request):
+    return render(request, 'available.html')
 
 class AppointmentTemplateView(TemplateView):
     template_name = "appointment.html"
@@ -134,3 +135,4 @@ class ManageAppointmentTemplateView(ListView):
             "title": "Manage Appointments"
         })
         return context
+    
