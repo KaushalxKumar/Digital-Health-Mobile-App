@@ -5,8 +5,9 @@ from django import forms
 
 from features.models import *
 
-
 class CreateUserForm(UserCreationForm):
     class Meta:
-        model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        model = Person
+        fields = ['username', 'email', 'password1', 'password2', 'professional', 'on_demand']
+
+

@@ -1,18 +1,20 @@
 from django.db import models
 from django.http import request
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
-class Person(models.Model):
-    first_name = models.CharField(max_length=100, null=True)
-    last_name = models.CharField(max_length=100, null=True)
-    email = models.CharField(max_length=100, null=True)
-    password = models.CharField(max_length=100)
-    status = models.BooleanField(default=False)
+class Person(AbstractUser):
+    #username
+    #email
+    professional = models.BooleanField(default=False)
+    on_demand = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.first_name + " " + self.last_name
+        return self.username
 
 class Appointment(models.Model):
+    health_professional_username = models.CharField(max_length=50, null=True)
+    user_username= models.CharField(max_length=50, null=True)
     first_name = models.CharField(max_length=50, null=True)
     last_name = models.CharField(max_length=50, null=True)
     email = models.CharField(max_length=50, null=True)
@@ -23,7 +25,10 @@ class Appointment(models.Model):
     accepted_date = models.DateField(auto_now_add=False, null=True, blank=True)
 
     def __str__(self):
-        return self.first_name
+        return "Appointment for " + self.first_name
 
     class Meta:
         ordering = ["-sent_date"]
+
+class ChatRoom(models.Model):
+    url = models.CharField(max_length=250, null=True)

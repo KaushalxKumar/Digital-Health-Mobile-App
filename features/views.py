@@ -67,11 +67,23 @@ def logoutUser(request):
     logout(request)
     return redirect('login')
 
+@login_required(login_url='login')
 def available(request):
-    return render(request, 'available.html')
+    professionals = Person.objects.filter(professional=True, on_demand=True)
+    rooms = ChatRoom.objects.all()
+    return render(request, 'on-demand.html', {'professionals': professionals, 'rooms' : rooms})
+
+@login_required(login_url='login')
+def profile(request):
+    user = Person.objects.get(username=request.user.username)
+    return render(request, 'profile.html', {'user': user})
 
 class AppointmentTemplateView(TemplateView):
     template_name = "appointment.html"
+
+    def get(self, request):
+        professionals = Person.objects.filter(professional=True)
+        return render(request, 'appointment.html', {'professionals': professionals})
 
     def post(self, request):
         fname = request.POST.get("fname")
@@ -79,8 +91,11 @@ class AppointmentTemplateView(TemplateView):
         email = request.POST.get("email")
         mobile = request.POST.get("mobile")
         message = request.POST.get("request")
+        professional= request.POST.get("professional")
 
         appointment = Appointment.objects.create(
+            health_professional_username = professional,
+            user_username = request.user.username,
             first_name=fname,
             last_name=lname,
             email=email,
@@ -91,8 +106,21 @@ class AppointmentTemplateView(TemplateView):
         appointment.save()
 
         messages.add_message(request, messages.SUCCESS,
-                             f"Thanks {fname} for making an appointment, we will email you ASAP!")
+                             f"Thanks {fname} for making an appointment, we will email you the link to join the meeting once its confirmed")
         return HttpResponseRedirect(request.path)
+
+
+# class EditProfileView(templateView):
+#     login_required = True
+#     template_name = ""
+#
+#     def post(self, request):
+#         user = Person.objects.get(username=request.user.username)
+#         user.username = John
+#         user.adress = re
+#         user.save()
+#
+#     return HttpResponseRedirect(request.path)
 
 
 class ManageAppointmentTemplateView(ListView):
@@ -105,14 +133,19 @@ class ManageAppointmentTemplateView(ListView):
     def post(self, request):
         date = request.POST.get("date")
         appointment_id = request.POST.get("appointment-id")
+        time = request.POST.get("appt")
         appointment = Appointment.objects.get(id=appointment_id)
         appointment.accepted = True
         appointment.accepted_date = datetime.datetime.now()
         appointment.save()
 
+        chat = ChatRoom.objects.all()
+
         data = {
             "fname": appointment.first_name,
             "date": date,
+            "chat": chat,
+            "time" : time,
         }
 
         message = get_template('email.html').render(data)
@@ -125,12 +158,17 @@ class ManageAppointmentTemplateView(ListView):
         email.content_subtype = "html"
         email.send()
 
-        messages.add_message(request, messages.SUCCESS, f"You accepted the appointment of {appointment.first_name}")
+        messages.add_message(request, messages.SUCCESS, f"You accepted the appointment for {appointment.first_name}")
         return HttpResponseRedirect(request.path)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        appointments = Appointment.objects.all()
+        if self.request.user.professional:
+            appointments = Appointment.objects.filter(health_professional_username=self.request.user.username)
+
+        else:
+            appointments = Appointment.objects.filter(user_username=self.request.user.username)
+
         context.update({
             "title": "Manage Appointments"
         })
