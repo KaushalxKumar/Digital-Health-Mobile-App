@@ -9,8 +9,13 @@ urlpatterns = [
     path('login/', loginPage, name='login'),
     path('logout/', logoutUser, name='logout'),
     path('on-demand/', available, name='available'),
-    path('view-profile/', profile, name='profile'),
+
+
+    path('view-profile/', EditProfileView.as_view(), name='profile'),
+    path('forget-Password/',forgetPassword , name='forgetPassword'),
+
     path('make-an-appointment/', AppointmentTemplateView.as_view(), name='appointment'),
     path('manage-appointments/', ManageAppointmentTemplateView.as_view(), name='manage'),
+
 
 ]

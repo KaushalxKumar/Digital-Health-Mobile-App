@@ -20,6 +20,7 @@ from django.template.loader import render_to_string, get_template
 
 from features.models import *
 from features.forms import *
+from django.db.models.query import QuerySet
 
 # Create your views here.
 @login_required(login_url='login')
@@ -42,6 +43,9 @@ def register(request):
 
         context = {'form' : form}
         return render(request, 'register.html', context)
+def forgetPassword(request):
+    return render(request, 'forgetPassword.html')
+
 
 def loginPage(request):
     if request.user.is_authenticated:
@@ -73,10 +77,7 @@ def available(request):
     rooms = ChatRoom.objects.all()
     return render(request, 'on-demand.html', {'professionals': professionals, 'rooms' : rooms})
 
-@login_required(login_url='login')
-def profile(request):
-    user = Person.objects.get(username=request.user.username)
-    return render(request, 'profile.html', {'user': user})
+
 
 class AppointmentTemplateView(TemplateView):
     template_name = "appointment.html"
@@ -110,17 +111,26 @@ class AppointmentTemplateView(TemplateView):
         return HttpResponseRedirect(request.path)
 
 
-# class EditProfileView(templateView):
-#     login_required = True
-#     template_name = ""
-#
-#     def post(self, request):
-#         user = Person.objects.get(username=request.user.username)
-#         user.username = John
-#         user.adress = re
-#         user.save()
-#
-#     return HttpResponseRedirect(request.path)
+class EditProfileView(TemplateView):
+    login_required = True
+    template_name = "profile.html"
+    #
+
+
+
+    def post(self, request):
+        choice  = request.POST.getlist("preference")
+        if "preference" in choice:
+            choice = True
+        else:
+            choice = False
+        user = Person.objects.get(username=request.user.username)
+        user.on_demand = choice
+
+        user.save()
+        messages.add_message(request, messages.SUCCESS, f"Your preference was changed")
+
+        return HttpResponseRedirect(request.path)
 
 
 class ManageAppointmentTemplateView(ListView):
