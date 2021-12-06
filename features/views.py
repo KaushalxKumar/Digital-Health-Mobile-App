@@ -114,18 +114,14 @@ class AppointmentTemplateView(TemplateView):
 class EditProfileView(TemplateView):
     login_required = True
     template_name = "profile.html"
-    #
-
-
 
     def post(self, request):
-        choice  = request.POST.getlist("preference")
-        if "preference" in choice:
-            choice = True
-        else:
-            choice = False
         user = Person.objects.get(username=request.user.username)
-        user.on_demand = choice
+        answer = request.POST.get("preference")
+        if answer == "Agree":
+            user.on_demand = True
+        else:
+            user.on_demand = False
 
         user.save()
         messages.add_message(request, messages.SUCCESS, f"Your preference was changed")
@@ -152,6 +148,7 @@ class ManageAppointmentTemplateView(ListView):
         chat = ChatRoom.objects.all()
 
         data = {
+            "professional": request.user.username,
             "fname": appointment.first_name,
             "date": date,
             "chat": chat,
@@ -164,6 +161,16 @@ class ManageAppointmentTemplateView(ListView):
             message,
             settings.EMAIL_HOST_USER,
             [appointment.email],
+        )
+        email.content_subtype = "html"
+        email.send()
+
+        message = get_template('email.html').render(data)
+        email = EmailMessage(
+            "About your appointment",
+            message,
+            settings.EMAIL_HOST_USER,
+            [request.user.email],
         )
         email.content_subtype = "html"
         email.send()
